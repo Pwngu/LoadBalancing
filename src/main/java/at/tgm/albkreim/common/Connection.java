@@ -14,9 +14,9 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class Connector {
+public class Connection {
 
-    private static final Logger LOG = LogManager.getLogger("at.tgm.ablkreim.common.Connector");
+    private static final Logger LOG = LogManager.getLogger("at.tgm.ablkreim.common.Connection");
 
 
     private final Object READING = new Object();
@@ -31,7 +31,7 @@ public class Connector {
 
     private volatile boolean isClosed;
 
-    public Connector(Socket socket, String name) {
+    public Connection(Socket socket, String name) {
 
         try {
 
@@ -43,7 +43,7 @@ public class Connector {
             this.name = name;
         } catch(Exception ex) {
 
-            throw new RuntimeException("Couldn't instantiate Connector", ex);
+            throw new RuntimeException("Couldn't instantiate Connection", ex);
         }
     }
 
@@ -152,7 +152,7 @@ public class Connector {
 
     public String toString() {
 
-        return "Connector" + (name == null ? "" : " " + name) + ": " +
+        return "Connection" + (name == null ? "" : " " + name) + ": " +
                 socket.getLocalAddress().toString() + "<>" + socket.getInetAddress().toString();
     }
 
