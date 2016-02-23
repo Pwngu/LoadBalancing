@@ -11,4 +11,8 @@ public abstract class Server {
     public Server(Connection connection) {
         this.connection = connection;
     }
+
+    public Connection getConnection() {
+        return connection;
+    }
 }
