@@ -1,4 +1,4 @@
-group 'at.reilaender_ableitinger'
+group 'at.tgm.ablkreim'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
@@ -13,7 +13,10 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.5'
+
+    compile 'org.apache.logging.log4j:log4j:2.5'
+    compile 'org.apache.logging.log4j:log4j-1.2-api:2.5'
+
     compile 'org.json:json:20090211'
     compile 'org.springframework.boot:spring-boot-starter-web'
 }
@@ -23,15 +26,6 @@ jar {
     version =  '0.1.0'
 }
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web")
-    testCompile("junit:junit")
-}
-
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
+    gradleVersion = '2.11'
 }
