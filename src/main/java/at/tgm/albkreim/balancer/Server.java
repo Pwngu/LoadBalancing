@@ -9,7 +9,7 @@ import at.tgm.albkreim.common.Connection;
 public abstract class Server {
     private Connection connection;
 
-    public Server(Connection connection) {
+    protected Server(Connection connection) {
         this.connection = connection;
     }
 
