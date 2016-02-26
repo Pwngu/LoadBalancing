@@ -1,6 +1,6 @@
-package at.tgm.albkreim.balancer;
+package at.tgm.ablkreim.balancer;
 
-import at.tgm.albkreim.common.Connection;
+import at.tgm.ablkreim.common.connection.Connection;
 
 /**
  * mreilaender

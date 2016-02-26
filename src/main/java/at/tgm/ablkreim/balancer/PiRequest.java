@@ -1,4 +1,4 @@
-package at.tgm.albkreim.balancer;
+package at.tgm.ablkreim.balancer;
 
 import java.io.Serializable;
 
@@ -8,7 +8,7 @@ import java.io.Serializable;
  */
 public class PiRequest implements Serializable {
     /* TODO Maybe rename to algorithm, then making an interface with constant variables describing the algorithm (e.g. Algorithms interface) */
-    public int LEIBNIZ = 1;
+    public static int LEIBNIZ = 1;
 
     private int precision, begin, end, algorithmn;
 }

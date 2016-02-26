@@ -1,4 +1,4 @@
-package at.tgm.albkreim.common;
+package at.tgm.ablkreim.common.connection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
