@@ -15,8 +15,9 @@ public class Server {
 
     private HashMap<PiRequest, PiResponse> responses;
 
+    private LoadBalancer balancer;
     private Connection connection;
-    private Lock lock;
+    private Lock sendLock;
 
     // Server Probe
     private Connection loadConnection;
@@ -28,21 +29,22 @@ public class Server {
     //Weighted Distribution
     private int weight;
 
-    public Server(Connection connection) {
+    public Server(LoadBalancer balancer, Connection connection) {
 
+        this.balancer = balancer;
         this.connection = connection;
-        this.lock = new ReentrantLock();
+        this.sendLock = new ReentrantLock();
     }
 
-    public Server(Connection connection, int weigth) {
+    public Server(LoadBalancer balancer, Connection connection, int weigth) {
 
-        this(connection);
+        this(balancer, connection);
         this.weight = weigth;
     }
 
-    public Server(Connection connection, Connection loadConnection) {
+    public Server(LoadBalancer balancer, Connection connection, Connection loadConnection) {
 
-        this(connection);
+        this(balancer, connection);
         this.loadConnection = loadConnection;
     }
 
@@ -59,13 +61,13 @@ public class Server {
     public void sendRequest(PiRequest request) {
 
         LOG.debug("Sending request to server: \"{}\"", connection.getName());
-        lock.lock();
+        sendLock.lock();
         try {
 
             this.connection.send(request);
             responses.put(request, null);
         } finally {
-            lock.unlock();
+            sendLock.unlock();
         }
     }
 
@@ -97,5 +99,48 @@ public class Server {
         LOG.debug("No longer waiting for a acknowledge from server: \"{}\"", connection.getName());
 
         responses.remove(request);
+    }
+
+    private class HandlerThread extends Thread {
+
+        private boolean running;
+
+        @Override
+        public void run() {
+
+            thread:
+            while(running) {
+
+                Object obj = connection.receive();
+                if(obj == null) {
+
+                    break;
+                } else if(obj instanceof String) {
+
+                    LOG.info("Message from server \"{}\": {}", connection.getName(), obj);
+                } else if(obj instanceof PiResponse) {
+
+                    PiResponse response = (PiResponse) obj;
+
+                    for(PiRequest request : responses.keySet())
+                        if(response.id == request.id) {
+
+                            responses.put(request, response);
+                            LOG.debug("Received response for request:\t");
+                            continue thread;
+                        }
+
+                    LOG.debug("Received acknowledge for command not waiting for");
+                }
+            }
+
+            LOG.warn("Disconnecting Server {}", connection.getName());
+            balancer.disconnect(Server.this);
+        }
+
+        public void stopRunning() {
+
+            running = false;
+        }
     }
 }
