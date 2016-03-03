@@ -13,13 +13,15 @@ import java.net.SocketException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Connection {
 
     private static final Logger LOG = LogManager.getLogger("at.tgm.ablkreim.common.Connection");
 
 
-    private final Object READING = new Object();
+    private final Lock readLock = new ReentrantLock();
 
 
     private ObjectInputStream in;
@@ -52,21 +54,18 @@ public class Connection {
 
         LOG.debug(this.toString() + " started receiving");
 
+        readLock.lock();
         try {
+            Object obj = in.readObject();
+            LOG.debug("{} received \"{}\"", this, obj);
 
-            synchronized (READING) {
+            try {
 
-                Object obj = in.readObject();
-                LOG.debug("{} received \"{}\"", this, obj);
+                return (T) obj;
+            } catch(ClassCastException ex) {
 
-                try {
-
-                    return (T) obj;
-                } catch(ClassCastException ex) {
-
-                    LOG.debug("{} received wrong object: {}", this, obj.getClass());
-                    return null;
-                }
+                LOG.debug("{} received wrong object: {}", this, obj.getClass());
+                return null;
             }
         } catch(EOFException ex) {
 
@@ -80,6 +79,9 @@ public class Connection {
 
             LOG.error("Exception in {} whilst receiving", this, ex);
             return null;
+        } finally {
+
+            readLock.unlock();
         }
     }
 
@@ -130,22 +132,18 @@ public class Connection {
         } catch(Exception ignored) {}
     }
 
+    @SuppressWarnings("unchecked")
     public <T> Future<T> getAcknowledge() {
 
-        return Executors.newCachedThreadPool().submit(new Callable<T>() {
+        return Executors.newCachedThreadPool().submit(() -> {
 
-            @Override
-            @SuppressWarnings("unchecked")
-            public T call() throws Exception {
+            Object obj = receive();
+            try {
 
-                Object obj = receive();
-                try {
+                return (T) obj;
+            } catch(ClassCastException ex) {
 
-                    return (T) obj;
-                } catch(ClassCastException ex) {
-
-                    throw new Exception(ex);
-                }
+                throw new Exception(ex);
             }
         });
     }
