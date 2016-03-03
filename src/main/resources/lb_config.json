@@ -3,5 +3,7 @@
   "server_port": 1234,
 
   "ip": "localhost",
-  "port": 1235
+  "port": 1235,
+
+  "algorithm": "leibniz"
 }
