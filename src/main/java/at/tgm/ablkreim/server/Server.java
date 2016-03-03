@@ -33,7 +33,7 @@ public class Server {
 
         try {
 
-            URL url = getClass().getClassLoader().getResource("serv_config.json");
+            URL url = getClass().getClassLoader().getResource("server_config.json");
             if(url == null)
                 LOG.fatal("Cannot find config file");
                 System.exit(1);
