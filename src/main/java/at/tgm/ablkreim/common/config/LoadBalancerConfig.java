@@ -15,7 +15,7 @@ public class LoadBalancerConfig extends Config {
 
     public int getServPort() {
 
-        return (int) super.config.get("servport");
+        return (Integer) super.config.get("servport");
     }
 
     public String getIP() {
@@ -25,7 +25,7 @@ public class LoadBalancerConfig extends Config {
 
     public int getPort() {
 
-        return (int) super.config.get("port");
+        return (Integer) super.config.get("port");
     }
 
     public String getAlgorithm() {
