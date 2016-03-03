@@ -8,14 +8,14 @@ public class LoadBalancerConfig extends Config {
         super(in);
     }
 
-    public String getServIP() {
+    public String getServerIP() {
 
-        return (String) super.config.get("server_ip");
+        return (String) super.config.get("serverIp");
     }
 
-    public int getServPort() {
+    public int getServerPort() {
 
-        return (Integer) super.config.get("server_port");
+        return (Integer) super.config.get("serverPort");
     }
 
     public String getIP() {
@@ -30,11 +30,11 @@ public class LoadBalancerConfig extends Config {
 
     public int getPiAlgorithm() {
 
-        return (Integer) super.config.get("pialgorithm");
+        return (Integer) super.config.get("piAlgorithm");
     }
 
-    public int getLbAlgorithm() {
+    public int getLoadBalancerAlgorithm() {
 
-        return (Integer) super.config.get("lbalgorithm");
+        return (Integer) super.config.get("loadBalancerAlgorithm");
     }
 }
