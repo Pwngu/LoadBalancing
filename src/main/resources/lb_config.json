@@ -1,6 +1,6 @@
 {
-  "servip": "localhost",
-  "servport": 1234,
+  "server_ip": "localhost",
+  "server_port": 1234,
 
   "ip": "localhost",
   "port": 1235
