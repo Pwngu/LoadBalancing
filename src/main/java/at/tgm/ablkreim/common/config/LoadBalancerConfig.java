@@ -10,12 +10,12 @@ public class LoadBalancerConfig extends Config {
 
     public String getServIP() {
 
-        return (String) super.config.get("servip");
+        return (String) super.config.get("server_ip");
     }
 
     public int getServPort() {
 
-        return (Integer) super.config.get("servport");
+        return (Integer) super.config.get("server_port");
     }
 
     public String getIP() {
