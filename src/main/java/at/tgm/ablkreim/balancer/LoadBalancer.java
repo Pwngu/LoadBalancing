@@ -33,7 +33,7 @@ public class LoadBalancer {
     public LoadBalancer() {
         this.connectedServers = new ArrayList<>();
         try {
-            URL url = getClass().getClassLoader().getResource("server_config.json");
+            URL url = getClass().getClassLoader().getResource("loadBalancer_config.json");
             if (url == null)
                 LOG.fatal("Cannot find config file");
             System.exit(1);

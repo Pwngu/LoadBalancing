@@ -1,0 +1,10 @@
+{
+  "serverIp": "localhost",
+  "serverPort": 1234,
+
+  "ip": "localhost",
+  "port": 1235,
+
+  "piAlgorithm": 1,
+  "lbAlgorithm": 1
+}
