@@ -4,22 +4,14 @@ import at.tgm.ablkreim.balancer.PiRequest;
 import at.tgm.ablkreim.balancer.PiResponse;
 import at.tgm.ablkreim.common.config.ServerConfig;
 import at.tgm.ablkreim.common.connection.Connection;
-import com.google.gson.JsonElement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author: mreilaender
@@ -35,12 +27,13 @@ public class Server {
 
 
     private ServerConfig config;
+    private HandlerThread handlerThread;
 
     public Server() {
 
         try {
 
-            URL url = getClass().getClassLoader().getResource("serv_config:json");
+            URL url = getClass().getClassLoader().getResource("serv_config.json");
             if(url == null)
                 LOG.fatal("Cannot find config file");
                 System.exit(1);
@@ -55,6 +48,14 @@ public class Server {
 
     public void start() {
 
+        handlerThread = new HandlerThread();
+        handlerThread.start();
+    }
+
+    public void stop() {
+
+        if(handlerThread != null)
+            handlerThread.stopRunning();
     }
 
     private BigDecimal calculateLeibniz(int begin, int end) {
@@ -66,7 +67,7 @@ public class Server {
         return result.multiply(new BigDecimal(4));
     }
 
-    private class HandlerThread implements Runnable {
+    private class HandlerThread extends Thread {
 
         private boolean running = true;
         private Connection connection;
@@ -97,7 +98,7 @@ public class Server {
             }
         }
 
-        public void stop() {
+        public void stopRunning() {
 
             running = false;
         }

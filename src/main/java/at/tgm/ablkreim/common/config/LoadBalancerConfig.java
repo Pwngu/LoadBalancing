@@ -28,8 +28,13 @@ public class LoadBalancerConfig extends Config {
         return (Integer) super.config.get("port");
     }
 
-    public String getAlgorithm() {
+    public int getPiAlgorithm() {
 
-        return (String) super.config.get("algorithm");
+        return (Integer) super.config.get("pialgorithm");
+    }
+
+    public int getLbAlgorithm() {
+
+        return (Integer) super.config.get("lbalgorithm");
     }
 }
