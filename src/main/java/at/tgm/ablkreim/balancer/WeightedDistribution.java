@@ -13,6 +13,11 @@ public class WeightedDistribution implements LoadBalancingAlgorithm {
     }
 
     @Override
+    public void removeServer(Server server) {
+
+    }
+
+    @Override
     public void send(PiRequest piRequest) {
 
     }
