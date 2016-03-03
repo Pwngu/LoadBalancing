@@ -71,8 +71,9 @@ public class LoadBalancer {
         public void run() {
             while (running) {
                 switch (loadBalancerConfig.getLbAlgorithm()) {
-                    case 1:
-                        break;
+                    case LoadBalancerAlogithms.LEAST_CONNECTION:
+
+
                 }
             }
         }
