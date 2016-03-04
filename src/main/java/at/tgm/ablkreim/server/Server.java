@@ -14,13 +14,20 @@ import java.net.Socket;
 import java.net.URL;
 
 /**
- * @author: mreilaender
- * @date: 26.02.2016
+ * Class representing a Server, used to perform calculation tasks (calculate pi)
+ *
+ * @author Klaus Ableitinger
+ * @version 26.02.2016
  */
 public class Server {
 
     private static final Logger LOG = LogManager.getLogger(Server.class);
 
+    /**
+     * Starts a Server and connects to the LoadBalancer.
+     *
+     * @param args program arguments
+     */
     public static void main(String[] args) {
         new Server().start();
     }
@@ -29,6 +36,9 @@ public class Server {
     private ServerConfig config;
     private HandlerThread handlerThread;
 
+    /**
+     * Default Server constructor.
+     */
     public Server() {
 
         try {
@@ -46,18 +56,34 @@ public class Server {
         }
     }
 
+    /**
+     * Starts this server and connects to the LoadBalancer.
+     */
     public void start() {
 
         handlerThread = new HandlerThread();
         handlerThread.start();
     }
 
+    /**
+     * Stops this server.
+     */
     public void stop() {
 
-        if(handlerThread != null)
+        if(handlerThread != null) {
+
             handlerThread.stopRunning();
+            handlerThread.interrupt();
+        }
     }
 
+    /**
+     * Calculates Pi with the Leibniz row.
+     *
+     * @param begin begin index of the row
+     * @param end end index of the row
+     * @return the added value of the row
+     */
     private BigDecimal calculateLeibniz(int begin, int end) {
         BigDecimal result = new BigDecimal(0.0);
         for(; begin <= end; ++begin) {

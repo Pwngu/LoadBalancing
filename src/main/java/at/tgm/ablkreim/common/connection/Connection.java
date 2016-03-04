@@ -33,6 +33,12 @@ public class Connection {
 
     private volatile boolean isClosed;
 
+    /**
+     * Creates a new connection with the given socket and identified by the given name.
+     *
+     * @param socket the socket of the connection
+     * @param name name to identify this connection
+     */
     public Connection(Socket socket, String name) {
 
         try {
@@ -50,6 +56,12 @@ public class Connection {
     }
 
     @SuppressWarnings("unchecked")
+    /**
+     * Receives a Object.
+     *
+     * If the received object cannot be cast, null is returned.
+     * @return the received Object correctly casted
+     */
     public <T> T receive() {
 
         LOG.debug(this.toString() + " started receiving");
@@ -85,6 +97,12 @@ public class Connection {
         }
     }
 
+    /**
+     * Sends the given Object.
+     *
+     * @param obj Object to send
+     * @return whether the sending was successful
+     */
     public boolean send(Serializable obj) {
 
         LOG.debug("{} sending \"{}\"", this, obj);
@@ -100,6 +118,12 @@ public class Connection {
         }
     }
 
+    /**
+     * Send the given byte.
+     *
+     * @param data the byte to send
+     * @return whether the sending was successful
+     */
     public boolean send(byte data) {
 
         LOG.debug("{} sending Byte \"{}\"", data);
@@ -116,6 +140,9 @@ public class Connection {
         }
     }
 
+    /**
+     * Closes this connection.
+     */
     public void close() {
 
         if(isClosed) return;
@@ -133,6 +160,11 @@ public class Connection {
     }
 
     @SuppressWarnings("unchecked")
+    /**
+     * Returns a Future object for the received data.
+     *
+     * @return a Future object for the received data
+     */
     public <T> Future<T> getAcknowledge() {
 
         return Executors.newCachedThreadPool().submit(() -> {
@@ -154,33 +186,54 @@ public class Connection {
                 socket.getLocalAddress().toString() + "<>" + socket.getInetAddress().toString();
     }
 
+    /**
+     * Returns whether this Connection is closed.
+     *
+     * @return true when Connection is closed.
+     */
     public boolean isClosed() {
 
         return isClosed;
     }
 
+    /**
+     * Returns the socket of this Connection.
+     *
+     * @return the socket of this Connection
+     */
     public Socket getSocket() {
 
         return socket;
     }
 
+    /**
+     * Returns the local address of this Connection.
+     *
+     * @return the local ip address.
+     */
     public InetAddress getLocalAddress() {
 
         return socket.getLocalAddress();
     }
 
+    /**
+     * Returns the remote address of this Connection.
+     *
+     * @return the rmeote ip address
+     */
     public InetAddress getRemoteAddress() {
 
         return socket.getInetAddress();
     }
 
+    /**
+     * Returns the name of this Connection.
+     *
+     * @return the name of this Connection
+     */
     public String getName() {
 
         return name;
     }
 
-    public void setName(String name) {
-
-        this.name = name;
-    }
 }

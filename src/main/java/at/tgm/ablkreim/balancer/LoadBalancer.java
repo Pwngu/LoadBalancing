@@ -17,8 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author: mreilaender
- * @date: 03.03.2016
+ * TODO
+ *
+ * @author Manuel Reiländer
+ * @version 03.03.2016
  */
 public class LoadBalancer {
     private static final Logger LOG = LogManager.getLogger(LoadBalancer.class);
@@ -28,10 +30,18 @@ public class LoadBalancer {
     private ServerSocket servers, clients;
     private List<Server> connectedServers;
 
+    /**
+     * Main method starting a LoadBalancer instance.
+     *
+     * @param args program arguments
+     */
     public static void main(String[] args) {
         new LoadBalancer().start();
     }
 
+    /**
+     * Default LoadBalancer constructor.
+     */
     public LoadBalancer() {
         this.connectedServers = new ArrayList<>();
         try {
@@ -53,11 +63,16 @@ public class LoadBalancer {
             case LoadBalancingAlgorithm.RESPONSE_TIME:
                 this.loadBalancingAlgorithm = new RoundRobin();
                 break;
-            case LoadBalancingAlgorithm.SERVER_LOAD:
-                throw new NotImplementedException();
+            case LoadBalancingAlgorithm.SERVER_PROBES:
+                // TODO
+                break;
+
         }
     }
 
+    /**
+     * Starts the LoadBalancer listening for server and client connections.
+     */
     public void start() {
         try {
             LOG.info("Reading connfig");
@@ -80,8 +95,14 @@ public class LoadBalancer {
         }
     }
 
+    /**
+     * Disconnects the given server from this LoadBalancer.
+     *
+     * @param server the server to disconnect
+     */
     public void disconnect(Server server) {
         loadBalancingAlgorithm.removeServer(server);
+        server.getConnection().close();
     }
 
     private class AcceptHandler implements Runnable {
