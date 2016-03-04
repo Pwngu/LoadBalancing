@@ -18,7 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class Server {
 
-    private static final Logger LOG = LogManager.getLogger(Server.class);
+    private static final Logger LOGGER = LogManager.getLogger(Server.class);
 
     private HashMap<PiRequest, PiResponse> responses;
 
@@ -132,7 +132,7 @@ public class Server {
      */
     public void sendRequest(PiRequest request) {
 
-        LOG.debug("Sending request to server: \"{}\"", connection.getName());
+        LOGGER.debug("Sending request to server: \"{}\"", connection.getName());
         sendLock.lock();
         try {
 
@@ -151,7 +151,7 @@ public class Server {
      */
     public boolean hasAcknowledge(PiRequest request) {
 
-        LOG.debug("Checking for acknowledge from server: \"{}\"", connection.getName());
+        LOGGER.debug("Checking for acknowledge from server: \"{}\"", connection.getName());
         if(!responses.containsKey(request))
             throw new IllegalArgumentException("Thread not waiting for an acknowledge of this command");
 
@@ -169,7 +169,7 @@ public class Server {
      */
     public PiResponse getAcknowledge(PiRequest request, int timeout) throws InterruptedException, TimeoutException {
 
-        LOG.debug("Trying to get acknowledge from server: \"{}\"", connection.getName());
+        LOGGER.debug("Trying to get acknowledge from server: \"{}\"", connection.getName());
 
         long timestamp = System.currentTimeMillis();
         while(!hasAcknowledge(request)) {
@@ -188,7 +188,7 @@ public class Server {
      */
     public void abortWaitForAcknowledge(PiRequest request) {
 
-        LOG.debug("No longer waiting for a acknowledge from server: \"{}\"", connection.getName());
+        LOGGER.debug("No longer waiting for a acknowledge from server: \"{}\"", connection.getName());
 
         responses.remove(request);
     }
@@ -209,7 +209,7 @@ public class Server {
                     break;
                 } else if(obj instanceof String) {
 
-                    LOG.info("Message from server \"{}\": {}", connection.getName(), obj);
+                    LOGGER.info("Message from server \"{}\": {}", connection.getName(), obj);
                 } else if(obj instanceof PiResponse) {
 
                     PiResponse response = (PiResponse) obj;
@@ -218,15 +218,15 @@ public class Server {
                         if(response.id == request.id) {
 
                             responses.put(request, response);
-                            LOG.debug("Received response for request:\t");
+                            LOGGER.debug("Received response for request:\t");
                             continue thread;
                         }
 
-                    LOG.debug("Received acknowledge for command not waiting for");
+                    LOGGER.debug("Received acknowledge for command not waiting for");
                 }
             }
 
-            LOG.warn("Disconnecting Server {}", connection.getName());
+            LOGGER.warn("Disconnecting Server {}", connection.getName());
             balancer.disconnect(Server.this);
         }
 
