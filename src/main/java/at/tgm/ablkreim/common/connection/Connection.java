@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.Lock;
@@ -18,7 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Connection {
 
-    private static final Logger LOG = LogManager.getLogger("at.tgm.ablkreim.common.Connection");
+    private static final Logger LOGGER = LogManager.getLogger("at.tgm.ablkreim.common.Connection");
 
 
     private final Lock readLock = new ReentrantLock();
@@ -64,32 +63,32 @@ public class Connection {
      */
     public <T> T receive() {
 
-        LOG.debug(this.toString() + " started receiving");
+        LOGGER.debug(this.toString() + " started receiving");
 
         readLock.lock();
         try {
             Object obj = in.readObject();
-            LOG.debug("{} received \"{}\"", this, obj);
+            LOGGER.debug("{} received \"{}\"", this, obj);
 
             try {
 
                 return (T) obj;
             } catch(ClassCastException ex) {
 
-                LOG.debug("{} received wrong object: {}", this, obj.getClass());
+                LOGGER.debug("{} received wrong object: {}", this, obj.getClass());
                 return null;
             }
         } catch(EOFException ex) {
 
-            LOG.debug("{} receiving ended with EOF-Ex", this);
+            LOGGER.debug("{} receiving ended with EOF-Ex", this);
             return null;
         } catch(SocketException ex) {
 
-            LOG.debug("{} receiving ended with Socket-Ex", this);
+            LOGGER.debug("{} receiving ended with Socket-Ex", this);
             return null;
         } catch(Exception ex) {
 
-            LOG.error("Exception in {} whilst receiving", this, ex);
+            LOGGER.error("Exception in {} whilst receiving", this, ex);
             return null;
         } finally {
 
@@ -105,7 +104,7 @@ public class Connection {
      */
     public boolean send(Serializable obj) {
 
-        LOG.debug("{} sending \"{}\"", this, obj);
+        LOGGER.debug("{} sending \"{}\"", this, obj);
 
         try {
 
@@ -126,7 +125,7 @@ public class Connection {
      */
     public boolean send(byte data) {
 
-        LOG.debug("{} sending Byte \"{}\"", data);
+        LOGGER.debug("{} sending Byte \"{}\"", data);
 
         try {
 
@@ -135,7 +134,7 @@ public class Connection {
             return true;
         } catch(Exception ex) {
 
-            LOG.debug("{} while sending byte");
+            LOGGER.debug("{} while sending byte");
             return false;
         }
     }
@@ -147,7 +146,7 @@ public class Connection {
 
         if(isClosed) return;
 
-        LOG.info("{} closing...", this);
+        LOGGER.info("{} closing...", this);
 
         isClosed = true;
 

@@ -21,7 +21,7 @@ import java.net.URL;
  */
 public class Server {
 
-    private static final Logger LOG = LogManager.getLogger(Server.class);
+    private static final Logger LOGGER = LogManager.getLogger(Server.class);
 
     /**
      * Starts a Server and connects to the LoadBalancer.
@@ -45,13 +45,13 @@ public class Server {
 
             URL url = getClass().getClassLoader().getResource("server_config.json");
             if(url == null)
-                LOG.fatal("Cannot find config file");
+                LOGGER.fatal("Cannot find config file");
                 System.exit(1);
 
             config = new ServerConfig(new FileReader(url.getFile()));
         } catch(FileNotFoundException ex) {
 
-            LOG.fatal("Cannot find config file", ex);
+            LOGGER.fatal("Cannot find config file", ex);
             System.exit(1);
         }
     }
@@ -101,7 +101,7 @@ public class Server {
         @Override
         public void run() {
 
-            LOG.info("Starting server handler");
+            LOGGER.info("Starting server handler");
             try {
 
                 connection = new Connection(new Socket(config.getIP(), config.getPort()), "LoadBalancerConnection");
@@ -112,7 +112,7 @@ public class Server {
 
                     if(request == null) {
 
-                        LOG.error("Received invalid Object");
+                        LOGGER.error("Received invalid Object");
                         continue;
                     }
 
@@ -120,7 +120,7 @@ public class Server {
                 }
             } catch(Exception ex) {
 
-                LOG.fatal("Exception in HandlerThread", ex);
+                LOGGER.fatal("Exception in HandlerThread", ex);
             }
         }
 
