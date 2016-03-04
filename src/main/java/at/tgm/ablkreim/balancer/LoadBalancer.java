@@ -83,7 +83,7 @@ public class LoadBalancer {
             this.clients = new ServerSocket(loadBalancerConfig.getPort(), 50, clientHost);
 
             LOGGER.debug("Waiting for new connections");
-            Thread waitForConnections = new Thread(new AcceptHandler());
+            Thread waitForConnections = new Thread(new AcceptHandler(this.clients, this.loadBalancingAlgorithm));
             waitForConnections.start();
         } catch (FileNotFoundException e) {
             LOGGER.fatal("Could not find resource file", e);
@@ -102,58 +102,5 @@ public class LoadBalancer {
     public void disconnect(Server server) {
         loadBalancingAlgorithm.removeServer(server);
         server.getConnection().close();
-    }
-
-    private class AcceptHandler implements Runnable {
-
-        private boolean running = true;
-        private Connection connection;
-
-        @Override
-        public void run() {
-            while (running) {
-                try {
-                    Socket client = clients.accept();
-                    new Thread(new RequestHandler(client)).start();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        public void setRunning(boolean running) {
-            this.running = running;
-        }
-    }
-
-    private class RequestHandler implements Runnable {
-        private Socket client;
-        private Connection connection;
-        private boolean running;
-
-        public RequestHandler(Socket client) {
-            this.client = client;
-            this.running = true;
-            this.connection = new Connection(this.client, this.client.getRemoteSocketAddress().toString());
-        }
-
-        @Override
-        public void run() {
-            PiRequest piRequest = this.connection.receive();
-            Server server = loadBalancingAlgorithm.send(piRequest);
-            try {
-                PiResponse piResponse = server.getAcknowledge(piRequest, (int)(Math.random()*60)*1000);
-                this.connection.send(piResponse);
-            } catch (InterruptedException e) {
-                LOGGER.debug("Thread interrupted while waiting", e);
-            } catch (TimeoutException e) {
-                LOGGER.debug("Request timeout", e);
-            }
-
-        }
-
-        public void setRunning(boolean running) {
-            this.running = running;
-        }
     }
 }
