@@ -13,8 +13,13 @@ import java.util.List;
  */
 public class RoundRobin implements LoadBalancingAlgorithm {
 
-    private List<Server> servers = new ArrayList<>();
-    private int current = 0;
+    private List<Server> servers;
+    private int current;
+
+    public RoundRobin() {
+        this.servers = new ArrayList<>();
+        this.current = 0;
+    }
 
     @Override
     public void addServer(Server server) {
