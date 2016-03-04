@@ -52,6 +52,10 @@ public class Server {
         return connection;
     }
 
+    public int getWeight() {
+        return weight;
+    }
+
     public int getActiveConnections() {
 
         return responses.size();
@@ -135,16 +139,12 @@ public class Server {
             }
 
             LOG.warn("Disconnecting Server {}", connection.getName());
-            balancer.disconnect(Server.this);
+            //balancer.disconnect(Server.this);
         }
 
         public void stopRunning() {
 
             running = false;
-        }
-
-        public int getWeight() {
-            return weight;
         }
     }
 }
