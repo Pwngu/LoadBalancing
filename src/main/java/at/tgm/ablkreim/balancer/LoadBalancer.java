@@ -3,7 +3,6 @@ package at.tgm.ablkreim.balancer;
 import at.tgm.ablkreim.common.config.LoadBalancerConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -53,7 +52,7 @@ public class LoadBalancer {
         }
         switch (loadBalancerConfig.getLoadBalancerAlgorithm()) {
             case LoadBalancingAlgorithm.WEIGHTED_DISTRIBUTION:
-                throw new NotImplementedException();
+                throw new UnsupportedOperationException();
             case LoadBalancingAlgorithm.LEAST_CONNECTION:
                 this.loadBalancingAlgorithm = new LeastConnection();
                 break;
@@ -61,7 +60,7 @@ public class LoadBalancer {
                 this.loadBalancingAlgorithm = new RoundRobin();
                 break;
             case LoadBalancingAlgorithm.SERVER_PROBES:
-                throw new NotImplementedException();
+                throw new UnsupportedOperationException();
         }
     }
 
