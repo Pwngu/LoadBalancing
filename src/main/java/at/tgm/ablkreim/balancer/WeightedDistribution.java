@@ -2,10 +2,6 @@ package at.tgm.ablkreim.balancer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * @author: mreilaender
@@ -18,16 +14,16 @@ public class WeightedDistribution implements LoadBalancingAlgorithm {
 
     @Override
     public void addServer(Server server) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void removeServer(Server server) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Server send(PiRequest piRequest) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 }
