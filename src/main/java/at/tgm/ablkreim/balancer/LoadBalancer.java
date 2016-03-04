@@ -64,9 +64,7 @@ public class LoadBalancer {
                 this.loadBalancingAlgorithm = new RoundRobin();
                 break;
             case LoadBalancingAlgorithm.SERVER_PROBES:
-                // TODO
-                break;
-
+                throw new NotImplementedException();
         }
     }
 
