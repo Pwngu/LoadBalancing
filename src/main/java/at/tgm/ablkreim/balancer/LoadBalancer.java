@@ -15,15 +15,16 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 /**
- * TODO
+ * TODO closing server socket or set running false in RequestHandler and AcceptHandler
  *
  * @author Manuel Reiländer
  * @version 03.03.2016
  */
 public class LoadBalancer {
-    private static final Logger LOG = LogManager.getLogger(LoadBalancer.class);
+    private static final Logger LOGGER = LogManager.getLogger(LoadBalancer.class);
 
     private LoadBalancerConfig loadBalancerConfig;
     private LoadBalancingAlgorithm loadBalancingAlgorithm;
@@ -47,11 +48,11 @@ public class LoadBalancer {
         try {
             URL url = getClass().getClassLoader().getResource("loadBalancer_config.json");
             if (url == null)
-                LOG.fatal("Cannot find config file");
+                LOGGER.fatal("Cannot find config file");
             System.exit(1);
             loadBalancerConfig = new LoadBalancerConfig(new FileReader(url.getFile()));
         } catch (FileNotFoundException e) {
-            LOG.fatal("Could not find file", e);
+            LOGGER.fatal("Could not find file", e);
         }
         switch (loadBalancerConfig.getLoadBalancerAlgorithm()) {
             case LoadBalancingAlgorithm.WEIGHTED_DISTRIBUTION:
@@ -73,22 +74,22 @@ public class LoadBalancer {
      */
     public void start() {
         try {
-            LOG.info("Reading connfig");
+            LOGGER.debug("Reading connfig");
             InetAddress serverHost = InetAddress.getByName(loadBalancerConfig.getServerIP());
             InetAddress clientHost = InetAddress.getByName(loadBalancerConfig.getIP());
 
-            LOG.info("Creating ServerSockets");
+            LOGGER.debug("Creating ServerSockets");
             this.servers = new ServerSocket(loadBalancerConfig.getServerPort(), 50, serverHost);
             this.clients = new ServerSocket(loadBalancerConfig.getPort(), 50, clientHost);
 
-            LOG.info("Waiting for new connections");
+            LOGGER.debug("Waiting for new connections");
             Thread waitForConnections = new Thread(new AcceptHandler());
             waitForConnections.start();
         } catch (FileNotFoundException e) {
-            LOG.fatal("Could not find resource file", e);
+            LOGGER.fatal("Could not find resource file", e);
             System.exit(1);
         } catch (IOException e) {
-            LOG.fatal("Could not open socket", e);
+            LOGGER.fatal("Could not open socket", e);
             System.exit(1);
         }
     }
@@ -138,8 +139,17 @@ public class LoadBalancer {
 
         @Override
         public void run() {
-            loadBalancingAlgorithm.send(this.connection.receive());
-            while(true);
+            PiRequest piRequest = this.connection.receive();
+            Server server = loadBalancingAlgorithm.send(piRequest);
+            try {
+                PiResponse piResponse = server.getAcknowledge(piRequest, (int)(Math.random()*60)*1000);
+                this.connection.send(piResponse);
+            } catch (InterruptedException e) {
+                LOGGER.debug("Thread interrupted while waiting", e);
+            } catch (TimeoutException e) {
+                LOGGER.debug("Request timeout", e);
+            }
+
         }
 
         public void setRunning(boolean running) {
