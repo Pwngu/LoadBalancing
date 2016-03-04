@@ -4,12 +4,14 @@ import at.tgm.ablkreim.common.config.LoadBalancerConfig;
 import at.tgm.ablkreim.common.connection.Connection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,14 +48,13 @@ public class LoadBalancer {
                 this.loadBalancingAlgorithm = new WeightedDistribution();
                 break;
             case LoadBalancingAlgorithm.LEAST_CONNECTION:
-                // TODO
+                this.loadBalancingAlgorithm = new LeastConnection();
                 break;
             case LoadBalancingAlgorithm.RESPONSE_TIME:
-                // TODO
+                this.loadBalancingAlgorithm = new RoundRobin();
                 break;
             case LoadBalancingAlgorithm.SERVER_LOAD:
-                // TODO
-                break;
+                throw new NotImplementedException();
         }
     }
 
@@ -68,7 +69,7 @@ public class LoadBalancer {
             this.clients = new ServerSocket(loadBalancerConfig.getPort(), 50, clientHost);
 
             LOG.info("Waiting for new connections");
-            Thread waitForConnections = new Thread(new HandlerThread());
+            Thread waitForConnections = new Thread(new AcceptHandler());
             waitForConnections.start();
         } catch (FileNotFoundException e) {
             LOG.fatal("Could not find resource file", e);
@@ -83,7 +84,7 @@ public class LoadBalancer {
         loadBalancingAlgorithm.removeServer(server);
     }
 
-    private class HandlerThread implements Runnable {
+    private class AcceptHandler implements Runnable {
 
         private boolean running = true;
         private Connection connection;
@@ -91,12 +92,39 @@ public class LoadBalancer {
         @Override
         public void run() {
             while (running) {
-
+                try {
+                    Socket client = clients.accept();
+                    new Thread(new RequestHandler(client)).start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
-        public void stop() {
-            running = false;
+        public void setRunning(boolean running) {
+            this.running = running;
+        }
+    }
+
+    private class RequestHandler implements Runnable {
+        private Socket client;
+        private Connection conection;
+        private boolean running;
+
+        public RequestHandler(Socket client) {
+            this.client = client;
+            this.running = true;
+        }
+
+        @Override
+        public void run() {
+            this.conection = new Connection(this.client, this.client.getRemoteSocketAddress().toString());
+            loadBalancingAlgorithm.send(this.conection.receive());
+            while(true);
+        }
+
+        public void setRunning(boolean running) {
+            this.running = running;
         }
     }
 }
