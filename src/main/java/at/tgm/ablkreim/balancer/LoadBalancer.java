@@ -1,7 +1,6 @@
 package at.tgm.ablkreim.balancer;
 
 import at.tgm.ablkreim.common.config.LoadBalancerConfig;
-import at.tgm.ablkreim.common.connection.Connection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -11,11 +10,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 /**
  * TODO closing server socket or set running false in RequestHandler and AcceptHandler

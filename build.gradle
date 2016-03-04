@@ -29,17 +29,17 @@ jar {
 }
 
 // Release Jar
-task releaseJar(type: Jar, dependsOn: ['classes']) {
+task loadBalancer(type: Jar, dependsOn: ['classes']) {
 
     // jar manifest
     manifest {
         attributes 'Implementation-Title': rootProject.name,
                 'Implementation-Version': version,
-                'Main-Class': "at.tgm.ablkreim.server.Server"
+                'Main-Class': "at.tgm.ablkreim.balancer.LoadBalancer"
     }
 
     // jar base name
-    baseName = "reilaender_ableitinger_loadbalancer_server"
+    baseName = "reilaender_ableitinger_loadbalancer_LoadBalancer"
 
     // pack all compile libs
     from {
