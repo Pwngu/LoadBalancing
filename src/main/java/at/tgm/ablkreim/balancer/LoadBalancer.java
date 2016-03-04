@@ -56,8 +56,7 @@ public class LoadBalancer {
         }
         switch (loadBalancerConfig.getLoadBalancerAlgorithm()) {
             case LoadBalancingAlgorithm.WEIGHTED_DISTRIBUTION:
-                this.loadBalancingAlgorithm = new WeightedDistribution();
-                break;
+                throw new NotImplementedException();
             case LoadBalancingAlgorithm.LEAST_CONNECTION:
                 this.loadBalancingAlgorithm = new LeastConnection();
                 break;
