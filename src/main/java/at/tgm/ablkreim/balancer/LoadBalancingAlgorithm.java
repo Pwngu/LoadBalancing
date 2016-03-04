@@ -1,6 +1,6 @@
 package at.tgm.ablkreim.balancer;
 
-import at.tgm.ablkreim.server.Server;
+import at.tgm.ablkreim.balancer.Server;
 
 /**
  * @author: mreilaender
