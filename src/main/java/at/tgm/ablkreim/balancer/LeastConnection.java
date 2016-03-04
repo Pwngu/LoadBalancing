@@ -1,7 +1,5 @@
 package at.tgm.ablkreim.balancer;
 
-import sun.plugin.dom.exception.InvalidStateException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +29,7 @@ public class LeastConnection implements LoadBalancingAlgorithm {
 
     @Override
     public Server send(PiRequest piRequest) {
-        if(servers.isEmpty()) throw new InvalidStateException("No servers added");
+        if(servers.isEmpty()) throw new RuntimeException("No servers added");
 
         servers.sort((first, second) -> first.getActiveConnections() - second.getActiveConnections());
         Server server = servers.get(servers.size() - 1);

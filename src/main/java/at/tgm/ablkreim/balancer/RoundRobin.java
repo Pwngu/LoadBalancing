@@ -1,7 +1,5 @@
 package at.tgm.ablkreim.balancer;
 
-import sun.plugin.dom.exception.InvalidStateException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +32,7 @@ public class RoundRobin implements LoadBalancingAlgorithm {
 
     @Override
     public Server send(PiRequest piRequest) {
-        if(servers.isEmpty()) throw new InvalidStateException("No servers added");
+        if(servers.isEmpty()) throw new RuntimeException("No servers added");
 
         Server server = servers.get(current++);
         if(current >= servers.size()) current = 0;
