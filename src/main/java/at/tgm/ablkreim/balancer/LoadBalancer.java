@@ -79,6 +79,10 @@ public class LoadBalancer {
         }
     }
 
+    public void disconnect(Server server) {
+        loadBalancingAlgorithm.removeServer(server);
+    }
+
     private class HandlerThread implements Runnable {
 
         private boolean running = true;
