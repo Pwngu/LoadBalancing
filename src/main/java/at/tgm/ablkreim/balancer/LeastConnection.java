@@ -13,7 +13,11 @@ import java.util.List;
  */
 public class LeastConnection implements LoadBalancingAlgorithm {
 
-    private List<Server> servers = new ArrayList<>();
+    private List<Server> servers;
+
+    public LeastConnection() {
+        this.servers = new ArrayList<>();
+    }
 
     @Override
     public void addServer(Server server) {
