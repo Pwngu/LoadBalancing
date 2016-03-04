@@ -18,6 +18,6 @@ public class ServerLoad implements Serializable,Comparable<ServerLoad> {
 
     @Override
     public int compareTo(ServerLoad other) {
-        return ((this.cpu + this.ram + this.drive + this.network) - (other.cpu + other.ram + other.drive + other.network));
+        return (this.cpu + this.ram + this.drive + this.network) - (other.cpu + other.ram + other.drive + other.network);
     }
 }

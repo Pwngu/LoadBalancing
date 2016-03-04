@@ -61,7 +61,6 @@ public class Server {
         return responses.size();
     }
 
-
     public void sendRequest(PiRequest request) {
 
         LOG.debug("Sending request to server: \"{}\"", connection.getName());
