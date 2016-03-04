@@ -10,7 +10,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- *
+ * Class representing a connected server node, the load balancer can send
+ * requests to.
  *
  * @author Klaus Ableitinger
  * @version 03.03.2016

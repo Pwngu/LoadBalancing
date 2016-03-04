@@ -2,21 +2,24 @@ package at.tgm.ablkreim.balancer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import sun.plugin.dom.exception.InvalidStateException;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * @author: mreilaender
- * @date: 04.03.2016
+ *
+ *
+ * @author Klaus Ableitinger
+ * @version 04.03.2016
  */
 public class LeastConnection implements LoadBalancingAlgorithm {
-    public static final Logger LOGGER = LogManager.getLogger(LeastConnection.class);
-    private Set<Server> servers;
 
-    public LeastConnection() {
-        this.servers = new TreeSet<>();
-    }
+    private List<Server> servers = new ArrayList<>();
 
     @Override
     public void addServer(Server server) {
@@ -29,15 +32,13 @@ public class LeastConnection implements LoadBalancingAlgorithm {
     }
 
     @Override
-    public void send(PiRequest piRequest) {
-        Server leastConnectionServer = null;
-        for (Server s: this.servers) {
-            if(leastConnectionServer == null || leastConnectionServer.getActiveConnections() > s.getActiveConnections())
-                leastConnectionServer = s;
-        }
-        if(leastConnectionServer != null)
-            leastConnectionServer.sendRequest(piRequest);
-        else
-            LOGGER.error("Could not find server with least connections, so could not send request. {}", piRequest);
+    public Server send(PiRequest piRequest) {
+        if(servers.isEmpty()) throw new InvalidStateException("No servers added");
+
+        servers.sort((first, second) -> first.getActiveConnections() - second.getActiveConnections());
+        Server server = servers.get(servers.size() - 1);
+
+        server.sendRequest(piRequest);
+        return server;
     }
 }

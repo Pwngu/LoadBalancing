@@ -27,7 +27,7 @@ public class WeightedDistribution implements LoadBalancingAlgorithm {
     }
 
     @Override
-    public void send(PiRequest piRequest) {
+    public Server send(PiRequest piRequest) {
         throw new NotImplementedException();
     }
 }

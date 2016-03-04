@@ -41,6 +41,7 @@ public interface LoadBalancingAlgorithm {
      * based on the underlying balancing integration.
      *
      * @param piRequest the request to send
+     * @return the server the request was sent to
      */
-    public void send(PiRequest piRequest);
+    public Server send(PiRequest piRequest);
 }
