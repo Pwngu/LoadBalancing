@@ -36,10 +36,10 @@ public class Server {
         this.sendLock = new ReentrantLock();
     }
 
-    public Server(LoadBalancer balancer, Connection connection, int weigth) {
+    public Server(LoadBalancer balancer, Connection connection, int weight) {
 
         this(balancer, connection);
-        this.weight = weigth;
+        this.weight = weight;
     }
 
     public Server(LoadBalancer balancer, Connection connection, Connection loadConnection) {
@@ -141,6 +141,10 @@ public class Server {
         public void stopRunning() {
 
             running = false;
+        }
+
+        public int getWeight() {
+            return weight;
         }
     }
 }
