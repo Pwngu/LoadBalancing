@@ -127,18 +127,18 @@ public class LoadBalancer {
 
     private class RequestHandler implements Runnable {
         private Socket client;
-        private Connection conection;
+        private Connection connection;
         private boolean running;
 
         public RequestHandler(Socket client) {
             this.client = client;
             this.running = true;
+            this.connection = new Connection(this.client, this.client.getRemoteSocketAddress().toString());
         }
 
         @Override
         public void run() {
-            this.conection = new Connection(this.client, this.client.getRemoteSocketAddress().toString());
-            loadBalancingAlgorithm.send(this.conection.receive());
+            loadBalancingAlgorithm.send(this.connection.receive());
             while(true);
         }
 
