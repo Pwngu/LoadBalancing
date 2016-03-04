@@ -12,7 +12,7 @@ import java.io.Reader;
 
 public abstract class Config {
 
-    private static final Logger LOG = LogManager.getLogger(Config.class);
+    private static final Logger LOGGER = LogManager.getLogger(Config.class);
 
 
     protected JSONObject config;
@@ -25,11 +25,11 @@ public abstract class Config {
             config = (JSONObject) parser.parse(in);
         } catch(IOException ex) {
 
-            LOG.fatal("Cannot load config file", ex);
+            LOGGER.fatal("Cannot load config file", ex);
             System.exit(1);
         } catch(ParseException ex) {
 
-            LOG.fatal("Cannot parse config file", ex);
+            LOGGER.fatal("Cannot parse config file", ex);
             System.exit(1);
         }
     }
