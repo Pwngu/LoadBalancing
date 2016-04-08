@@ -27,21 +27,13 @@ import java.util.List;
 public class LoadBalancer {
     private static final Logger LOGGER = LogManager.getLogger(LoadBalancer.class);
 
+
     private LoadBalancerConfig loadBalancerConfig;
     private LoadBalancingAlgorithm loadBalancingAlgorithm;
     private ServerSocket servers, clients;
     private List<Server> connectedServers;
 
     private boolean run;
-
-    /**
-     * Main method starting a LoadBalancer instance.
-     *
-     * @param args program arguments
-     */
-    public static void main(String[] args) {
-        new LoadBalancer().start();
-    }
 
     /**
      * Default LoadBalancer constructor.
@@ -63,7 +55,9 @@ public class LoadBalancer {
 
         switch (loadBalancerConfig.getLoadBalancerAlgorithm()) {
             case LoadBalancingAlgorithm.WEIGHTED_DISTRIBUTION:
-                throw new UnsupportedOperationException();
+                LOGGER.info("Using Least Connection Balancing method");
+                this.loadBalancingAlgorithm = new WeightedDistribution();
+                break;
             case LoadBalancingAlgorithm.LEAST_CONNECTION:
                 LOGGER.info("Using Least Connection Balancing method");
                 this.loadBalancingAlgorithm = new LeastConnection();
@@ -101,7 +95,15 @@ public class LoadBalancer {
                 try {
                     Socket client = servers.accept();
                     LOGGER.info("New Server Connection");
-                    Server server = new Server(this, new Connection(client, "Server Connection #" + connectedServers.size()));
+                    Connection connection = new Connection(client, "Server Connection #" + connectedServers.size());
+                    int weight = 0;
+
+                    if(loadBalancerConfig.getLoadBalancerAlgorithm() == LoadBalancingAlgorithm.WEIGHTED_DISTRIBUTION) {
+                        weight = connection.receive();
+                        LOGGER.debug("Initialize Server with weight " + weight);
+                    }
+
+                    Server server = new Server(this, connection, weight);
                     server.startHandlingRequests();
                     loadBalancingAlgorithm.addServer(server);
                 } catch(IOException ex) {

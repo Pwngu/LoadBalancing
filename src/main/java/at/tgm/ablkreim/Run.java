@@ -22,7 +22,14 @@ public class Run {
 
         switch(args[0]) {
             case "server":
-                new Server().start();
+                int weight = 0;
+                if(args.length == 2) {
+                    try { weight = Integer.parseInt(args[1]);
+                    } catch(NumberFormatException ex) {
+                        LOGGER.warn("Invalid second argument");
+                    }
+                }
+                new Server(weight).start();
                 break;
             case "balancer":
                 new LoadBalancer().start();

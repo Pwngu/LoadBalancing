@@ -17,4 +17,9 @@ public class ServerConfig extends Config {
 
         return ((Long) super.config.get("port")).intValue();
     }
+
+    public int getWeight() {
+
+        return ((Long) super.config.get("weight")).intValue();
+    }
 }

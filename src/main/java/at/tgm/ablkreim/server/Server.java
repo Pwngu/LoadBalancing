@@ -27,25 +27,19 @@ public class Server {
 
     private static final Logger LOGGER = LogManager.getLogger(Server.class);
 
-    /**
-     * Starts a Server and connects to the LoadBalancer.
-     *
-     * @param args program arguments
-     */
-    public static void main(String[] args) {
-        new Server().start();
-    }
-
 
     private ServerConfig config;
     private HandlerThread handlerThread;
+    private int serverWeight;
 
     /**
      * Default Server constructor.
      */
-    public Server() {
+    public Server(int weight) {
 
         LOGGER.info("Starting Server");
+
+        this.serverWeight = weight;
 
         InputStream stream = getClass().getResourceAsStream("/server_config.json");
         if (stream == null) {
@@ -107,6 +101,9 @@ public class Server {
             try {
 
                 connection = new Connection(new Socket(config.getIP(), config.getPort()), "LoadBalancerConnection");
+
+                if(serverWeight != 0)
+                    connection.send(serverWeight);
 
                 while(running) {
 

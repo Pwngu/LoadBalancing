@@ -194,6 +194,12 @@ public class Server {
         responses.remove(request);
     }
 
+    @Override
+    public String toString() {
+
+        return "Server{Con:" + getActiveConnections() + " Weight:" + getWeight() + "}";
+    }
+
     private class HandlerThread extends Thread {
 
         private boolean running = true;

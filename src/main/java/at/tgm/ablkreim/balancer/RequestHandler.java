@@ -40,7 +40,7 @@ public class RequestHandler implements Runnable {
             Server server = loadBalancingAlgorithm.send(piRequest);
 
             try {
-                PiResponse piResponse = server.getAcknowledge(piRequest, (int) (Math.random() * 60) * 1000);
+                PiResponse piResponse = server.getAcknowledge(piRequest, 60000); // 1 Minute
                 this.connection.send(piResponse);
             } catch(InterruptedException ex) {
                 LOGGER.debug("Thread interrupted while waiting", ex);
