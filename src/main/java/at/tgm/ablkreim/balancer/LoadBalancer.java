@@ -1,14 +1,19 @@
 package at.tgm.ablkreim.balancer;
 
 import at.tgm.ablkreim.common.config.LoadBalancerConfig;
+import at.tgm.ablkreim.common.connection.Connection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.net.server.InputStreamLogEventBridge;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +32,8 @@ public class LoadBalancer {
     private ServerSocket servers, clients;
     private List<Server> connectedServers;
 
+    private boolean run;
+
     /**
      * Main method starting a LoadBalancer instance.
      *
@@ -40,26 +47,35 @@ public class LoadBalancer {
      * Default LoadBalancer constructor.
      */
     public LoadBalancer() {
+
+        run = true;
+
+        LOGGER.info("Starting Loadbalancer");
         this.connectedServers = new ArrayList<>();
-        try {
-            URL url = getClass().getClassLoader().getResource("loadBalancer_config.json");
-            if (url == null)
-                LOGGER.fatal("Cannot find config file");
+
+        InputStream stream = getClass().getResourceAsStream("/loadBalancer_config.json");
+        if (stream == null) {
+            LOGGER.fatal("Cannot find config file");
             System.exit(1);
-            loadBalancerConfig = new LoadBalancerConfig(new FileReader(url.getFile()));
-        } catch (FileNotFoundException e) {
-            LOGGER.fatal("Could not find file", e);
         }
+        loadBalancerConfig = new LoadBalancerConfig(new InputStreamReader(stream));
+        LOGGER.debug(loadBalancerConfig);
+
         switch (loadBalancerConfig.getLoadBalancerAlgorithm()) {
             case LoadBalancingAlgorithm.WEIGHTED_DISTRIBUTION:
                 throw new UnsupportedOperationException();
             case LoadBalancingAlgorithm.LEAST_CONNECTION:
+                LOGGER.info("Using Least Connection Balancing method");
                 this.loadBalancingAlgorithm = new LeastConnection();
                 break;
-            case LoadBalancingAlgorithm.RESPONSE_TIME:
+            case LoadBalancingAlgorithm.ROUND_ROBIN:
+                LOGGER.info("Using Least Connection Balancing method");
                 this.loadBalancingAlgorithm = new RoundRobin();
                 break;
             case LoadBalancingAlgorithm.SERVER_PROBES:
+                throw new UnsupportedOperationException();
+            default:
+                LOGGER.fatal("Unknown Algorithm");
                 throw new UnsupportedOperationException();
         }
     }
@@ -69,7 +85,7 @@ public class LoadBalancer {
      */
     public void start() {
         try {
-            LOGGER.debug("Reading connfig");
+            LOGGER.debug("Reading config");
             InetAddress serverHost = InetAddress.getByName(loadBalancerConfig.getServerIP());
             InetAddress clientHost = InetAddress.getByName(loadBalancerConfig.getIP());
 
@@ -77,9 +93,22 @@ public class LoadBalancer {
             this.servers = new ServerSocket(loadBalancerConfig.getServerPort(), 50, serverHost);
             this.clients = new ServerSocket(loadBalancerConfig.getPort(), 50, clientHost);
 
-            LOGGER.debug("Waiting for new connections");
-            Thread waitForConnections = new Thread(new AcceptHandler(this.clients, this.loadBalancingAlgorithm));
-            waitForConnections.start();
+            new Thread(new ClientAcceptHandler()).start();
+
+            LOGGER.info("Waiting for new Server connections");
+            while(run) {
+
+                try {
+                    Socket client = servers.accept();
+                    LOGGER.info("New Server Connection");
+                    Server server = new Server(this, new Connection(client, "Server Connection #" + connectedServers.size()));
+                    server.startHandlingRequests();
+                    loadBalancingAlgorithm.addServer(server);
+                } catch(IOException ex) {
+                    LOGGER.fatal("IOException in Server Accept Handler", ex);
+                    System.exit(1);
+                }
+            }
         } catch (FileNotFoundException e) {
             LOGGER.fatal("Could not find resource file", e);
             System.exit(1);
@@ -95,7 +124,30 @@ public class LoadBalancer {
      * @param server the server to disconnect
      */
     public void disconnect(Server server) {
+        LOGGER.debug("Disconnection Server " + server.getConnection());
         loadBalancingAlgorithm.removeServer(server);
         server.getConnection().close();
+    }
+
+    private class ClientAcceptHandler implements Runnable {
+
+        private boolean run = true;
+
+        @Override
+        public void run() {
+            LOGGER.info("Waiting for new Client Connections");
+
+            while(run) {
+
+                try {
+                    Socket client = clients.accept();
+                    new Thread(new RequestHandler(client, loadBalancingAlgorithm)).start();
+                    LOGGER.info("New Client Connection");
+                } catch(IOException ex) {
+                    LOGGER.fatal("IOException in Server Accept Handler", ex);
+                    System.exit(1);
+                }
+            }
+        }
     }
 }

@@ -26,7 +26,7 @@ public class RoundRobin implements LoadBalancingAlgorithm {
 
     @Override
     public void removeServer(Server server) {
-        current--;
+        if(current >= servers.size()) current = 0;
         servers.remove(server);
     }
 

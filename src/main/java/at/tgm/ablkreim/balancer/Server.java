@@ -49,6 +49,7 @@ public class Server {
         this.balancer = balancer;
         this.connection = connection;
         this.sendLock = new ReentrantLock();
+        this.responses = new HashMap<>();
     }
 
     /**
@@ -151,7 +152,7 @@ public class Server {
      */
     public boolean hasAcknowledge(PiRequest request) {
 
-        LOGGER.debug("Checking for acknowledge from server: \"{}\"", connection.getName());
+//        LOGGER.debug("Checking for acknowledge from server: \"{}\"", connection.getName());
         if(!responses.containsKey(request))
             throw new IllegalArgumentException("Thread not waiting for an acknowledge of this command");
 
@@ -195,7 +196,7 @@ public class Server {
 
     private class HandlerThread extends Thread {
 
-        private boolean running;
+        private boolean running = true;
 
         @Override
         public void run() {

@@ -3,6 +3,7 @@ package at.tgm.ablkreim.balancer;
 import at.tgm.ablkreim.common.connection.Connection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 import java.net.Socket;
 import java.util.concurrent.TimeoutException;
@@ -13,26 +14,39 @@ import java.util.concurrent.TimeoutException;
  */
 public class RequestHandler implements Runnable {
     public static final Logger LOGGER = LogManager.getLogger(RequestHandler.class);
+
     private Connection connection;
     private LoadBalancingAlgorithm loadBalancingAlgorithm;
+    private boolean run;
 
     public RequestHandler(Socket client, LoadBalancingAlgorithm loadBalancingAlgorithm) {
-        this.connection = new Connection(client, client.getRemoteSocketAddress().toString());
+        this.run = true;
+        this.connection = new Connection(client, "Client Connection #1");
+        LOGGER.info("Accepted new Connection: {}", connection);
         this.loadBalancingAlgorithm = loadBalancingAlgorithm;
     }
 
     @Override
     public void run() {
-        PiRequest piRequest = this.connection.receive();
-        Server server = loadBalancingAlgorithm.send(piRequest);
-        try {
-            PiResponse piResponse = server.getAcknowledge(piRequest, (int)(Math.random()*60)*1000);
-            this.connection.send(piResponse);
-        } catch (InterruptedException e) {
-            LOGGER.debug("Thread interrupted while waiting", e);
-        } catch (TimeoutException e) {
-            LOGGER.debug("Request timeout", e);
-        }
 
+        while(run) {
+            PiRequest piRequest = this.connection.receive();
+
+            if(piRequest == null) {
+                LOGGER.error("Received invalid Object");
+                break;
+            }
+
+            Server server = loadBalancingAlgorithm.send(piRequest);
+
+            try {
+                PiResponse piResponse = server.getAcknowledge(piRequest, (int) (Math.random() * 60) * 1000);
+                this.connection.send(piResponse);
+            } catch(InterruptedException ex) {
+                LOGGER.debug("Thread interrupted while waiting", ex);
+            } catch(TimeoutException ex) {
+                LOGGER.debug("Request timeout", ex);
+            }
+        }
     }
 }

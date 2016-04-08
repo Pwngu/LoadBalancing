@@ -2,6 +2,7 @@ package at.tgm.ablkreim.server;
 
 import at.tgm.ablkreim.balancer.PiRequest;
 import at.tgm.ablkreim.balancer.PiResponse;
+import at.tgm.ablkreim.common.config.LoadBalancerConfig;
 import at.tgm.ablkreim.common.config.ServerConfig;
 import at.tgm.ablkreim.common.connection.Connection;
 import org.apache.logging.log4j.LogManager;
@@ -9,9 +10,12 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.Socket;
 import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * Class representing a Server, used to perform calculation tasks (calculate pi)
@@ -41,19 +45,15 @@ public class Server {
      */
     public Server() {
 
-        try {
+        LOGGER.info("Starting Server");
 
-            URL url = getClass().getClassLoader().getResource("server_config.json");
-            if(url == null)
-                LOGGER.fatal("Cannot find config file");
-                System.exit(1);
-
-            config = new ServerConfig(new FileReader(url.getFile()));
-        } catch(FileNotFoundException ex) {
-
-            LOGGER.fatal("Cannot find config file", ex);
+        InputStream stream = getClass().getResourceAsStream("/server_config.json");
+        if (stream == null) {
+            LOGGER.fatal("Cannot find config file");
             System.exit(1);
         }
+        config = new ServerConfig(new InputStreamReader(stream));
+        LOGGER.debug(config);
     }
 
     /**
@@ -101,6 +101,8 @@ public class Server {
         @Override
         public void run() {
 
+            Thread.currentThread().setName("LoadBalancer Handler Thread");
+
             LOGGER.info("Starting server handler");
             try {
 
@@ -113,7 +115,7 @@ public class Server {
                     if(request == null) {
 
                         LOGGER.error("Received invalid Object");
-                        continue;
+                        break;
                     }
 
                     connection.send(new PiResponse(calculateLeibniz(request.begin, request.end), request.id));

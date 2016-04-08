@@ -10,6 +10,9 @@ import at.tgm.ablkreim.balancer.Server;
  */
 public interface LoadBalancingAlgorithm {
 
+    /** Constant for the round robin balancing algorithm configuration value */
+    int ROUND_ROBIN = 0;
+
     /** Constant for the weighted distribution balancing algorithm configuration value */
     int WEIGHTED_DISTRIBUTION = 1;
 

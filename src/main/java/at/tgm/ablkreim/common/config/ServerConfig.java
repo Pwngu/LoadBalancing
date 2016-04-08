@@ -15,6 +15,6 @@ public class ServerConfig extends Config {
 
     public int getPort() {
 
-        return (int) super.config.get("port");
+        return ((Long) super.config.get("port")).intValue();
     }
 }

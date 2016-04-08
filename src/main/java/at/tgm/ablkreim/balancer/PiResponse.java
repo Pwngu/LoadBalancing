@@ -13,4 +13,10 @@ public class PiResponse implements Serializable {
         this.pi = pi;
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+
+        return "PiResponse{#" + id + " Pi:" + pi + "}";
+    }
 }

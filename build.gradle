@@ -1,5 +1,5 @@
 group 'at.tgm.ablkreim'
-version '1.0-SNAPSHOT'
+version '1.0'
 
 apply plugin: 'java'
 apply plugin: 'application'
@@ -23,23 +23,18 @@ dependencies {
     compile 'com.google.code.gson:gson:2.2.4'
 }
 
-jar {
-    baseName = 'gs-rest-service'
-    version =  '0.1.0'
-}
-
 // Release Jar
-task loadBalancer(type: Jar, dependsOn: ['classes']) {
+task releaseJar(type: Jar, dependsOn: ['classes']) {
 
     // jar manifest
     manifest {
         attributes 'Implementation-Title': rootProject.name,
                 'Implementation-Version': version,
-                'Main-Class': "at.tgm.ablkreim.balancer.LoadBalancer"
+                'Main-Class': "at.tgm.ablkreim.Run"
     }
 
     // jar base name
-    baseName = "reilaender_ableitinger_loadbalancer_LoadBalancer"
+    baseName = "reilaender_ableitinger_loadbalancer"
 
     // pack all compile libs
     from {
@@ -56,7 +51,6 @@ task loadBalancer(type: Jar, dependsOn: ['classes']) {
 
     with jar
 }
-
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.11'
